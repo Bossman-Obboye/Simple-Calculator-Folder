@@ -22,7 +22,7 @@ class _YouCalculatorState extends State<YouCalculator> {
   String operation = '';
 
    bntOnClick(String buttonValue) {
-    // print(buttonValue);
+    print(buttonValue);
     if (buttonValue == 'C') {
       textToDisplay = '';
       firstNum = 0;

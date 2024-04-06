@@ -1,4 +1,6 @@
+import 'package:calc/flutter_prototype.dart';
 import 'package:flutter/material.dart';
+import 'package:math_expressions/math_expressions.dart';
 
 class MyCalculator extends StatefulWidget {
   const MyCalculator({super.key});
@@ -13,54 +15,49 @@ String inputs = '';
 RegExp nonNum = RegExp(r'[+\-/x()]');
 String value = '';
 final List<String> btnLabel = [
-  "0",
-  ".",
-  "ans",
-  "=",
-  "3",
-  "2",
-  "1",
-  "+",
-  "6",
-  "5",
-  "4",
-  "-",
+  "AC",
+  "Del",
+  "( )",
+  "/",
   "9",
   "8",
   "7",
   "x",
-  "AC",
-  "Del",
+  "6",
+  "5",
+  "4",
+  "-",
+  "3",
+  "2",
+  "1",
+  "+",
   "+/-",
-  "/"
+  "0",
+  ".",
+  "="
 ];
 
 class _MyCalculatorState extends State<MyCalculator> {
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
-    return Scaffold(
-      backgroundColor: const Color.fromARGB(172, 94, 93, 93),
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        title: const Center(child: Text('Simple Calculator')),
-      ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Container(
-            clipBehavior: Clip.hardEdge,
-            decoration: BoxDecoration(
-                color: Colors.white, borderRadius: BorderRadius.circular(15)),
-            margin: EdgeInsets.symmetric(
-              vertical: size.width * 0.04,
+    return SafeArea(
+      child: Scaffold(
+        appBar: AppBar(
+          backgroundColor: Colors.white,
+          title: const Center(child: Text('Simple Calculator')),
+        ),
+        body: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Container(
+              width: size.width,
+              height: size.height * 0.24, // Adjust the height as needed
+              padding: const EdgeInsets.all(10),
+              // Add any widgets you want to appear above the GridView.builder
             ),
-            padding: EdgeInsets.symmetric(horizontal: size.width * 0.03),
-            height: size.height * 0.27,
-            width: size.width * 0.94,
-            child: Wrap(
-              alignment: WrapAlignment.end,
-              verticalDirection: VerticalDirection.up,
+            Column(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
                   ans,
@@ -78,209 +75,108 @@ class _MyCalculatorState extends State<MyCalculator> {
                 ),
               ],
             ),
-          ),
-          Expanded(
-            child: GridView.builder(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 5, vertical: 10),
-                reverse: true,
+            Expanded(
+              child: GridView.builder(
                 physics: const NeverScrollableScrollPhysics(),
-                itemCount: 20,
                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 4,
-                  childAspectRatio: 1.15,
-                ),
-                itemBuilder: (builder, i) {
-                  Color fillColor = const Color.fromARGB(216, 255, 255, 255);
-                  Color textColor = Colors.black;
-                  if (i == 3 ||
-                      i == 7 ||
-                      i == 11 ||
-                      i == 15 ||
-                      i == 18 ||
-                      i == 19) {
-                    fillColor = const Color.fromARGB(132, 202, 197, 191);
-                  } else if (i == 16) {
-                    fillColor = const Color.fromARGB(209, 226, 128, 128);
-                    textColor = Colors.white;
+                    crossAxisCount: 4, childAspectRatio: 1.2),
+                itemCount: 20,
+                itemBuilder: (context, index) {
+                  Color btnContentColor = Colors.black;
+                  Color btnColor = Colors.white;
+                  double btnContentSize = 25;
+                  switch (index) {
+                    case 0:
+                      {
+                        btnColor = const Color.fromARGB(198, 168, 9, 9);
+                        btnContentColor = Colors.white;
+                        btnContentSize = 28;
+                      }
+                      break;
+                    case 1:
+                      {
+                        btnContentColor =
+                            const Color.fromARGB(199, 201, 16, 16);
+                        btnContentSize = 28;
+                      }
+                      break;
+                    case 3:
+                    case 7:
+                    case 11:
+                    case 15:
+                    case 16:
+                      {
+                        btnContentColor =
+                            const Color.fromARGB(255, 5, 110, 196);
+                        btnContentSize = 30;
+                      }
+                      break;
+                    case 19:
+                      {
+                        btnContentColor = Colors.black;
+                        btnContentSize = 30;
+                        btnColor = const Color.fromARGB(214, 197, 218, 235);
+                      }
+                      break;
+                    default:
+                      {}
                   }
-                  return Padding(
-                    padding: const EdgeInsets.all(5.0),
-                    child: FloatingActionButton(
-                        backgroundColor: fillColor,
-                        child: Text(
-                          btnLabel[i],
-                          style: TextStyle(
-                            color: textColor,
-                            fontSize: 25,
-                          ),
-                        ),
-                        onPressed: () =>
-                            setState(() => acceptBtnLabel(btnLabel[i]))
-                        // setState(() {});
-                        ),
+
+                  return Prototype(
+                    btnContent: btnLabel[index],
+                    btnColor: btnColor,
+                   btnOnPressed: callMe,
+                    btnContentColor: btnContentColor,
+                    btnContentSize: btnContentSize,
                   );
-                }),
-          ),
-        ],
+                },
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
-}
+  callMe(String btnValue) {
+    setState(() {
+  switch (btnValue) {
+    case "AC":
+      history = "";
+      ans = '';
+      inputs = '';
+      break;
+    case "Del":
+      if (inputs.isNotEmpty) {
+        inputs = inputs.substring(0, inputs.length - 1);
+      }
+      break;
 
-String acceptBtnLabel(String btnLable) {
-  // inputs += btnLable;
-  switch (btnLable) {
-    case 'AC':
-      {
-        inputs != '' ? inputs = '' : history = '';
-        ans = '';
-      }
-      break;
-    case 'Del':
-      {
-        inputs.isNotEmpty
-            ? inputs = inputs.substring(0, inputs.length - 1)
-            : {/*Do Nothing*/};
-      }
-      break;
-    case '+/-':
-      {
-        // Double check...................Testing
-        if (inputs.isNotEmpty) {
-          inputs[0] == '-' ? inputs = inputs.substring(1) : inputs = '-$inputs';
-        }
-      }
-      break;
-    case '+' || '-' || 'x' || '/':
-      {
-        if (inputs.isNotEmpty) {
-          if (inputsEndsWithOperator()) {
-            inputs =
-                inputs.replaceRange(inputs.length - 1, inputs.length, btnLable);
-          } else if (inputs[inputs.length - 1] == '.') {
-            inputs += '0$btnLable';
-          } else {
-            inputs += btnLable;
-          }
-        }
-      }
-      break;
     case "=":
-      {
-        if (!inputsEndsWithOperator()) {
-          // history = inputs;
-          ansHasNonZeroFiguresAfterDot(ans)
-              ? inputs = ans
-              : inputs = ans.substring(0, ans.lastIndexOf('.'));
-        } else if (inputs.isEmpty) {/*Do nothing*/}
-      }
-    case 'ans':
-      {
-        if (inputs.isEmpty || inputsEndsWithOperator()) {
-          inputs += ans;
-        } else {/*Do nothing*/}
-      }
-    case '.':
-      {
-        if (inputs.isEmpty || inputsEndsWithOperator()) {
-          inputs += '0.';
-        } else if (!inputs.split(nonNum).last.contains('.')) {
-          inputs += '.';
-        }
-      }
+      ans = evaluateInputs(inputs);
       break;
     default:
-      {
-        inputs += btnLable;
-      }
+      inputs += btnValue;
   }
-  return inputs;
+
+});
+  // print("Inputs: $inputs");
+}
 }
 
-bool ansHasNonZeroFiguresAfterDot(String ans) {
-  ans = evaluateInputs(inputs);
-  return RegExp(r'\.\d*[1-9]').hasMatch(ans);
-}
+  
 
-bool inputsEndsWithOperator() {
-  return inputs.endsWith('+') ||
-      inputs.endsWith('-') ||
-      inputs.endsWith('x') ||
-      inputs.endsWith('/');
-}
+String evaluateInputs(String inputs) {
+  Parser p = Parser();
+  ContextModel cm = ContextModel();
 
-bool isOperator(String opt) {
-  return opt == '+' || opt == 'x' || opt == '/' || opt == '-';
-}
+  try {
+    Expression exp = p.parse(inputs);
 
-double performOperation(double num1, String operator, double num2) {
-  switch (operator) {
-    case '+':
-      return num1 + num2;
-    case '-':
-      return num1 - num2;
-    case 'x':
-      return num1 * num2;
-    case '/':
-      return num1 / num2;
-    default:
-      throw ArgumentError("Invalid operator: $operator");
+    double result = exp.evaluate(EvaluationType.REAL, cm);
+
+    return result.toString();
+  } catch (e) {
+    return "Error";
   }
-}
-
-String evaluateInputs(String input) {
-  // var inputs = acceptBtnLabel(input);
-
-  List<double> numbers = [];
-  List<String> operators = [];
-
-  void performOperationsUntilLowerPrecedence(String currentOperator) {
-    while (operators.isNotEmpty &&
-        operators.last != '(' &&
-        ((currentOperator == '+' || currentOperator == '-') &&
-            (operators.last == 'x' || operators.last == '/'))) {
-      double num2 = numbers.removeLast();
-      double num1 = numbers.removeLast();
-      String op = operators.removeLast();
-      numbers.add(performOperation(num1, op, num2));
-    }
-  }
-
-  List<String> tokens = inputs.split(nonNum);
-
-  for (var token in tokens) {
-    if (token.isNotEmpty) {
-      numbers.add(double.parse(token));
-    }
-  }
-
-  for (var i = 0; i < inputs.length; i++) {
-    String ch = inputs[i];
-    if (isOperator(ch)) {
-      performOperationsUntilLowerPrecedence(ch);
-      operators.add(ch);
-    } else if (ch == '(') {
-      operators.add(ch);
-    } else if (ch == ')') {
-      while (operators.isNotEmpty && operators.last != '(') {
-        double num2 = numbers.removeLast();
-        double num1 = numbers.removeLast();
-        String op = operators.removeLast();
-        numbers.add(performOperation(num1, op, num2));
-      }
-      operators.removeLast(); // Remove the opening parenthesis
-    }
-  }
-
-  while (operators.isNotEmpty) {
-    double num2 = numbers.removeLast();
-    double num1 = numbers.removeLast();
-    String op = operators.removeLast();
-    numbers.add(performOperation(num1, op, num2));
-  }
-
-  ans = numbers.first.toString();
-
-  return ans;
+  
 }
